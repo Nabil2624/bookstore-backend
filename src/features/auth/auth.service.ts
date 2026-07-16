@@ -7,17 +7,17 @@ import {
 
 import bcrypt from 'bcrypt';
 
-import { RegisterData } from './auth.validation.js';
-import jwt from 'jsonwebtoken';
-import { AppError } from '../../utils/AppError.js';
+import { RegisterData, LoginData } from './auth.validation.js';
 
+import { AppError } from '../../utils/AppError.js';
+import {generateToken} from '../../utils/jwt.js';
 
 export async function register(data: RegisterData){
 
 const existingUserByEmail = await findUserByEmail(data.email);
 
 if (existingUserByEmail){
-    throw new AppError('Email already exists', 409);;
+    throw new AppError('Email already exists', 409);
 }
 
 const existingUserByUsername = await findUserByUsername(data.username);
@@ -36,16 +36,7 @@ const createdUser = await createUser({
 
 })
 
-const token = jwt.sign(
-    {
-        userId: createdUser.id,
-        role: createdUser.role,
-    },
-    process.env.JWT_SECRET!,
-    {
-        expiresIn: '7d'
-    }
-);
+const token = generateToken(createdUser);
 
 return {
     user:{
@@ -58,4 +49,36 @@ return {
     token,
 }
 }
+
+
+
+export async function login(data: LoginData){
+
+const isEmail = data.login.includes('@');
+
+const user  = isEmail ? await findUserByEmail(data.login) : await findUserByUsername(data.login);
+if(!user){
+    throw new AppError('Invalid credentials', 401);
+}
+
+const isPasswordValid = await bcrypt.compare(data.password, user.password);
+
+if(!isPasswordValid){
+    throw new AppError('Invalid credentials', 401);
+}
+
+const token = generateToken(user);
+
+return {
+    user: {
+  id: user.id,
+  name: user.name,
+  username: user.username,
+  email: user.email,
+  role: user.role,
+},
+    token,
+    }
+}
+
 

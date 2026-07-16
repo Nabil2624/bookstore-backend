@@ -85,3 +85,5 @@ export const resetPasswordSchema = z.object({
 
 
 export type RegisterData = z.infer<typeof registerSchema>;
+export type LoginData = z.infer<typeof loginSchema>;
+

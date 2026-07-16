@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import authRouter from '../features/auth/auth.routes.js';
 
 export const router = new Hono();
 
@@ -15,3 +16,5 @@ router.get('/health', (c) => {
     },
   });
 });
+
+router.route('/auth', authRouter);

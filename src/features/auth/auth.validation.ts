@@ -56,7 +56,7 @@ export const resetPasswordSchema = z.object({
     email: z.email({
         message: 'Invalid email address',
     }),
-    otp : z.string().trim().min(1, 'OTP is required'),
+    otp: z.string().length(6, 'OTP must be 6 characters'),
     newPassword: z
     .string()
     .min(8, {
@@ -84,6 +84,13 @@ export const resetPasswordSchema = z.object({
 })
 
 
+
+
+
+
+
 export type RegisterData = z.infer<typeof registerSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
+export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 

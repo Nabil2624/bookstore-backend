@@ -7,7 +7,7 @@ import {
 
 import bcrypt from 'bcrypt';
 
-import { RegisterData, LoginData } from './auth.validation.js';
+import { RegisterData, LoginData, ForgotPasswordData } from './auth.validation.js';
 
 import { AppError } from '../../utils/AppError.js';
 import {generateToken} from '../../utils/jwt.js';
@@ -82,3 +82,14 @@ return {
 }
 
 
+export async function forgotPassword(data: ForgotPasswordData){
+    const user  = await findUserByEmail(data.email)
+
+    if(user){
+        console.log(`OTP for ${user.email}: 123456`)
+    }
+
+    return {
+        message : 'If an account with that email exists, an OTP has been sent.'
+    }
+}

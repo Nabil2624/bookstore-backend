@@ -1,4 +1,4 @@
-import {register, login} from './auth.service.js';
+import {register, login, forgotPassword} from './auth.service.js';
 
 import type {Context} from 'hono';
 
@@ -19,3 +19,10 @@ export async function loginController(c: Context){
 }
 
 
+export async function forgotPasswordController(c: Context) {
+    const data  = await c.req.json();
+
+    const result = await forgotPassword(data);
+
+    return c.json(result, 200);
+}

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import authRouter from '../features/auth/auth.routes.js';
-
+import authorRouter from '../features/authors/author.routes.js';
 export const router = new Hono();
 
 router.get('/', (c) => {
@@ -18,3 +18,4 @@ router.get('/health', (c) => {
 });
 
 router.route('/auth', authRouter);
+router.route('/authors',authorRouter )

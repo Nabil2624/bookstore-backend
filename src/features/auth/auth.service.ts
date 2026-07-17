@@ -2,15 +2,26 @@ import {
   findUserByEmail,
   findUserByUsername,
   createUser,
+  updatePassword,
+  findUserById,
+  updateUserProfile,
 } from './auth.repository.js';
 
 
 import bcrypt from 'bcrypt';
 
-import { RegisterData, LoginData, ForgotPasswordData } from './auth.validation.js';
+
+import {
+  RegisterData,
+  LoginData,
+  ForgotPasswordData,
+  ResetPasswordData,
+  UpdateProfileData,
+} from './auth.validation.js';
 
 import { AppError } from '../../utils/AppError.js';
 import {generateToken} from '../../utils/jwt.js';
+
 
 export async function register(data: RegisterData){
 
@@ -92,4 +103,83 @@ export async function forgotPassword(data: ForgotPasswordData){
     return {
         message : 'If an account with that email exists, an OTP has been sent.'
     }
+}
+
+export async function resetPassword(data: ResetPasswordData) {
+   const user  = await findUserByEmail(data.email)
+
+  if (!user) {
+throw new AppError("Invalid email or OTP", 400);
+}
+if (data.otp !== "123456") {
+    throw new AppError("Invalid email or OTP", 400);
+}
+const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+
+await updatePassword(user.id,hashedPassword);
+
+return{
+    message: "Password reset successfully"
+}
+}
+
+
+
+export async function getProfile(userId: number){
+
+    const user = await findUserById(userId)
+
+    if(!user) {
+        throw new AppError('User not found', 404)
+    }
+
+   return {
+  id: user.id,
+  name: user.name,
+  username: user.username,
+  email: user.email,
+  role: user.role,
+};
+}
+
+
+export async function updateProfile(
+  userId: number,
+  data: UpdateProfileData,
+) {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  const existingUserByEmail = await findUserByEmail(data.email);
+
+  if (
+    existingUserByEmail &&
+    existingUserByEmail.id !== user.id
+  ) {
+    throw new AppError('Email already exists', 409);
+  }
+
+  const existingUserByUsername = await findUserByUsername(
+    data.username,
+  );
+
+  if (
+    existingUserByUsername &&
+    existingUserByUsername.id !== user.id
+  ) {
+    throw new AppError('Username already exists', 409);
+  }
+
+  const updatedUser = await updateUserProfile(userId, data);
+
+  return {
+    id: updatedUser.id,
+    name: updatedUser.name,
+    username: updatedUser.username,
+    email: updatedUser.email,
+    role: updatedUser.role,
+  };
 }

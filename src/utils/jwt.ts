@@ -12,3 +12,9 @@ export function generateToken(user: { id: number; role: string }) {
     }
   );
 }
+
+
+export interface JwtPayload {
+  userId: number;
+  role: string;
+}

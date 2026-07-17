@@ -84,6 +84,19 @@ export const resetPasswordSchema = z.object({
 })
 
 
+export const updateProfileSchema = z.object({
+    name: z.string().trim().min(2).max(100),
+     username: z
+    .string()
+    .trim()
+    .min(3)
+    .max(30)
+    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+     email: z.email({
+    message: 'Invalid email address',
+  }),
+})
+
 
 
 
@@ -93,4 +106,5 @@ export type RegisterData = z.infer<typeof registerSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
 export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+export type UpdateProfileData = z.infer<typeof updateProfileSchema>;
 

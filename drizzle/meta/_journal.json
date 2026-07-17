@@ -15,6 +15,13 @@
       "when": 1784191608869,
       "tag": "0001_burly_wind_dancer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784304462413,
+      "tag": "0002_needy_toad_men",
+      "breakpoints": true
     }
   ]
 }

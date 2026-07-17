@@ -1,4 +1,4 @@
-import {register, login, forgotPassword,resetPassword, getProfile,updateProfile} from './auth.service.js';
+import {register, login, forgotPassword,resetPassword, getProfile,updateProfile, changePassword} from './auth.service.js';
 
 import type {Context} from 'hono';
 
@@ -53,5 +53,16 @@ export async function updateProfileController(c: Context) {
   const result = await updateProfile(user.userId, data);
 
   return c.json(result, 200);
+}
+
+
+export async function changePasswordController(c: Context){
+const data = await c.req.json();
+
+const user = c.get('user');
+
+const result = await changePassword(user.userId, data);
+
+return c.json(result, 200);
 }
 

@@ -17,6 +17,7 @@ import {
   ForgotPasswordData,
   ResetPasswordData,
   UpdateProfileData,
+  ChangePasswordData,
 } from './auth.validation.js';
 
 import { AppError } from '../../utils/AppError.js';
@@ -182,4 +183,36 @@ export async function updateProfile(
     email: updatedUser.email,
     role: updatedUser.role,
   };
+}
+
+
+export async function changePassword(
+    userId: number,
+    data: ChangePasswordData,
+){
+    const user = await findUserById(userId);
+
+    if(!user){
+        throw new AppError('User not found', 404)
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+  data.currentPassword,
+  user.password,
+);
+
+if (!isPasswordValid) {
+  throw new AppError('Current password is incorrect', 401);
+}
+
+const hashedPassword = await bcrypt.hash(
+  data.newPassword,
+  10,
+);
+
+await updatePassword(user.id, hashedPassword);
+
+return {
+  message: 'Password changed successfully',
+};
 }

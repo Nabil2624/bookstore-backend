@@ -22,7 +22,7 @@ import {
 
 import { AppError } from '../../utils/AppError.js';
 import {generateToken} from '../../utils/jwt.js';
-
+import { saveToken } from '../../utils/tokenStore.js';
 
 export async function register(data: RegisterData){
 
@@ -49,6 +49,7 @@ const createdUser = await createUser({
 })
 
 const token = generateToken(createdUser);
+await saveToken(token, createdUser.id);
 
 return {
     user:{
@@ -80,6 +81,7 @@ if(!isPasswordValid){
 }
 
 const token = generateToken(user);
+await saveToken(token, user.id);
 
 return {
     user: {

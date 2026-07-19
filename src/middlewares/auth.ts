@@ -2,6 +2,7 @@ import type { Context, Next } from 'hono';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/AppError.js';
 import { JwtPayload } from '../utils/jwt.js';
+import { hasToken } from '../utils/tokenStore.js';
 
 export async function auth(c: Context, next: Next) {
     const authorization = c.req.header('Authorization');
@@ -22,10 +23,17 @@ export async function auth(c: Context, next: Next) {
 
 
 try {
-    const decoded = jwt.verify(
+const decoded = jwt.verify(
   token,
-  process.env.JWT_SECRET!
+  process.env.JWT_SECRET!,
 ) as JwtPayload;
+
+const tokenExists = await hasToken(token);
+
+if (!tokenExists) {
+  throw new AppError('Unauthorized', 401);
+}
+
 c.set('user', decoded);
 
 await next();

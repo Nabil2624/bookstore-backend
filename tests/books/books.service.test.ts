@@ -29,6 +29,7 @@ describe('createBook', () => {
   updatedAt: new Date(),
 });
 
+// const fakeBook = () =>({})
     await expect(
       createBook(1, {
         title: 'The Hobbit',

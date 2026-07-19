@@ -1,9 +1,15 @@
-import type {Context, Next} from 'hono';
-import {z} from 'zod';
+import type { Context, Next } from 'hono';
+import { z } from 'zod';
 
-export function validate(schema: z.ZodTypeAny) {
+export function validate(
+  schema: z.ZodTypeAny,
+  source: 'body' | 'query' = 'body',
+) {
   return async (c: Context, next: Next) => {
-    const data = await c.req.json();
+    const data =
+      source === 'body'
+        ? await c.req.json()
+        : c.req.query();
 
     const result = schema.safeParse(data);
 

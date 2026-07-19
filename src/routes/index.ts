@@ -3,10 +3,11 @@ import authRouter from '../features/auth/auth.routes.js';
 import authorRouter from '../features/authors/author.routes.js';
 import categoriesRouter from '../features/categories/categories.routes.js';
 import tagsRouter from '../features/tags/tags.routes.js';
+import booksRouter from '../features/books/books.routes.js';
 export const router = new Hono();
 
 router.get('/', (c) => {
-  return c.text('Bookstore API is running!');
+  return c.text('Bookstore API is running');
 });
 
 router.get('/health', (c) => {
@@ -23,3 +24,4 @@ router.route('/auth', authRouter);
 router.route('/authors',authorRouter );
 router.route('/categories',categoriesRouter );
 router.route('/tags', tagsRouter);
+router.route('/books',booksRouter);

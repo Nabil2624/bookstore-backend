@@ -14,10 +14,15 @@
     "skipLibCheck": true,
     "noEmit": true,
 
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
 
-  "include": ["src", "eslint.config.mjs"],
+  "include": [
+  "src",
+  "tests",
+  "eslint.config.mjs",
+  "vitest.config.ts"
+],
 
   "exclude": ["node_modules"]
 }

@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { auth } from '../../middlewares/auth.js';
 import { validate } from '../../middlewares/validate.js';
 
-import { bookQuerySchema } from './books.query.validation.js';
+import { bookQuerySchema, bookSchema } from './books.query.validation.js';
 
 import { createBookController, getAllBooksController, getBookByIdController, getMyBooksController, updateBookByIdController, deleteBookByIdController } from './books.controller.js';
 
@@ -13,7 +13,7 @@ const booksRouter = new Hono();
 booksRouter.post(
   '/',
   auth,
-  validate(bookQuerySchema),
+  validate(bookSchema),
   createBookController,
 );
 
@@ -33,7 +33,7 @@ booksRouter.get(
 booksRouter.put(
   '/:id',
   auth,
-  validate(bookQuerySchema),
+  validate(bookSchema),
   updateBookByIdController,
 );
 

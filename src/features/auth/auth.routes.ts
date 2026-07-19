@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { changePasswordController, forgotPasswordController, getProfileController, loginController, registerController, resetPasswordController, updateProfileController } from './auth.controller.js';
+import { changePasswordController, forgotPasswordController, getProfileController, loginController, registerController, resetPasswordController, updateProfileController, logoutController } from './auth.controller.js';
 import { validate } from '../../middlewares/validate.js';
 import { registerSchema,loginSchema, forgotPasswordSchema, resetPasswordSchema, updateProfileSchema, changePasswordSchema } from './auth.validation.js';
 import {auth} from '../../middlewares/auth.js';
@@ -14,5 +14,6 @@ authRouter.post('/reset-password', validate(resetPasswordSchema), resetPasswordC
 authRouter.get('/profile', auth, getProfileController)
 authRouter.put('/profile',auth, validate(updateProfileSchema), updateProfileController)
 authRouter.put('/change-password', auth, validate(changePasswordSchema), changePasswordController )
+authRouter.post('/logout', auth, logoutController)
 
 export default authRouter;

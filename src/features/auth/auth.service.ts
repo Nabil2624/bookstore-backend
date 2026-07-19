@@ -22,7 +22,9 @@ import {
 
 import { AppError } from '../../utils/AppError.js';
 import {generateToken} from '../../utils/jwt.js';
-import { saveToken } from '../../utils/tokenStore.js';
+import { saveToken, deleteToken } from '../../utils/tokenStore.js';
+
+
 
 export async function register(data: RegisterData){
 
@@ -217,4 +219,13 @@ await updatePassword(user.id, hashedPassword);
 return {
   message: 'Password changed successfully',
 };
+}
+
+
+export async function logout(token: string) {
+  await deleteToken(token);
+
+  return {
+    message: 'Logged out successfully',
+  };
 }

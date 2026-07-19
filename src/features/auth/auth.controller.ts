@@ -1,4 +1,4 @@
-import {register, login, forgotPassword,resetPassword, getProfile,updateProfile, changePassword} from './auth.service.js';
+import {register, login, forgotPassword,resetPassword, getProfile,updateProfile, changePassword, logout} from './auth.service.js';
 
 import type {Context} from 'hono';
 
@@ -64,5 +64,16 @@ const user = c.get('user');
 const result = await changePassword(user.userId, data);
 
 return c.json(result, 200);
+}
+
+
+export async function logoutController(c: Context){
+  const authorization = c.req.header('Authorization')!;
+
+  const token = authorization.split(' ')[1];
+
+  const result = await logout(token);
+
+  return c.json(result, 200);
 }
 

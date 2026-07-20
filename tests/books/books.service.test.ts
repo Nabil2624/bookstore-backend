@@ -29,7 +29,7 @@ import * as authorRepository from '../../src/features/authors/author.repository.
 import * as categoryRepository from '../../src/features/categories/categories.repository.js';
 import * as tagRepository from '../../src/features/tags/tags.repository.js';
 
-import { createBook, getBookById } from '../../src/features/books/books.service.js';
+import { createBook, getBookById, updateBookById } from '../../src/features/books/books.service.js';
 // import { findCategoryById } from '../../src/features/categories/categories.repository.js';
 
 const bookData = {
@@ -41,6 +41,33 @@ const bookData = {
   categoryId: 1,
   tagIds: [],
 };
+const existingBook = {
+  id: 1,
+  title: 'The Hobbit',
+  description: 'Fantasy',
+  price: 100,
+  thumbnail: 'https://example.com/book.jpg',
+  userId: 1,
+  authorId: 1,
+  categoryId: 1,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  author: {
+    id: 1,
+    name: 'J.K. Rowling',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  category: {
+    id: 1,
+    name: 'Fantasy',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  bookTags: [],
+};
+
+
 
 describe('createBook', () => {
   beforeEach(() => {
@@ -105,22 +132,6 @@ it('should throw if category does not exist', async () => {
   await expect(
     createBook(1, bookData)
   ).rejects.toThrow('Category not found');
-});
-
-it('should throw id a tag does not not exist ', async ()=> {
-  vi.mocked(booksRepository.findBookByTitle).mockResolvedValue(undefined);
-
-  vi.mocked(authorRepository.findAuthorById).mockResolvedValue({
-     id: 1,
-    name: 'J.K. Rowling',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
-vi.mocked(categoryRepository.findCategoryById).mockResolvedValue(undefined);
-
-await expect(
-  createBook(1, bookData)
-).rejects.toThrow('Category not found')
 });
 
 
@@ -236,4 +247,73 @@ it('should return the book', async () => {
   const result = await getBookById(1);
 
   expect(result).toEqual(book);
+});
+
+
+it('should throw if book does not exist', async () => {
+  vi.mocked(booksRepository.findBookById).mockResolvedValue(undefined);
+
+  await expect(
+    updateBookById(1, 1, bookData)
+  ).rejects.toThrow('Book not found');
+});
+
+
+
+it('should throw forbidden if user is not owner', async () => {
+  vi.mocked(booksRepository.findBookById).mockResolvedValue({
+    ...existingBook,
+    userId: 2,
+  });
+
+  await expect(
+    updateBookById(1, 1, bookData)
+  ).rejects.toThrow('Forbidden');
+});
+
+
+vi.mocked(booksRepository.findBookById).mockResolvedValue(existingBook);
+
+vi.mocked(booksRepository.findBookByTitle).mockResolvedValue({
+  ...existingBook,
+  id: 2,
+});
+
+it('should update the book successfully', async () => {
+  vi.mocked(booksRepository.findBookById).mockResolvedValue(existingBook);
+
+  vi.mocked(booksRepository.findBookByTitle).mockResolvedValue(undefined);
+
+  vi.mocked(authorRepository.findAuthorById).mockResolvedValue({
+    id: 1,
+    name: 'J.K. Rowling',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  vi.mocked(categoryRepository.findCategoryById).mockResolvedValue({
+    id: 1,
+    name: 'Fantasy',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  vi.mocked(booksRepository.updateBookById).mockResolvedValue({
+    ...existingBook,
+    title: 'The Hobbit',
+  });
+
+  vi.mocked(booksRepository.deleteBookTags).mockResolvedValue(undefined);
+  vi.mocked(booksRepository.createBookTags).mockResolvedValue(undefined);
+
+  const result = await updateBookById(1, 1, bookData);
+
+  expect(result).toEqual({
+    ...existingBook,
+    title: 'The Hobbit',
+  });
+
+  expect(booksRepository.deleteBookTags).toHaveBeenCalledWith(1);
+
+  expect(booksRepository.createBookTags).toHaveBeenCalledWith(1, []);
 });
